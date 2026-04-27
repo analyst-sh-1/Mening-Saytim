@@ -1,17 +1,68 @@
-<script>
-  var password = prompt("Xavfsizlik uchun parolni kiriting:");
-  if (password !== "MeningHimoyam777") {
-    alert("Parol noto'g'ri! Kirish taqiqlanadi.");
-    window.location.href = "https://google.com";
-  }
-</script>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mening Laboratoriyam</title>
-</head>
-<body>
-    <h1>Salom! Bu mening kiber-laboratoriyam.</h1>
-    <p>Hozircha sayt tashqaridan himoya qilingan.</p>
-</body>
-</html>
+JavaScript
+export default {
+  async fetch(request, env) {
+    const password = "MeningHimoyam777"; // O'zingiz xohlagan parolni yozing
+    const url = new URL(request.url);
+
+    // Agar foydalanuvchi allaqachon bloklangan bo'lsa
+    if (url.searchParams.has("blocked")) {
+      return new Response("🚨 TIZIM BLOKLANDI! Juda ko'p xato urinishlar aniqlandi.", { 
+        status: 403,
+        headers: { "content-type": "text/plain;charset=UTF-8" }
+      });
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Kiber-Laboratoriya</title>
+        <style>
+          body { background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+          .box { border: 2px solid #00ff41; padding: 30px; box-shadow: 0 0 20px #00ff41; text-align: center; }
+          input { background: #000; color: #00ff41; border: 1px solid #00ff41; padding: 10px; width: 200px; margin-bottom: 10px; }
+          button { background: #00ff41; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+          button:hover { background: #00cc33; }
+        </style>
+      </head>
+      <body>
+        <div id="login" class="box">
+          <h2>🔐 TERMINALGA KIRISH</h2>
+          <p id="msg">Xavfsizlik parolini kiriting:</p>
+          <input type="password" id="pass"><br>
+          <button onclick="check()">TASDIQLASH</button>
+        </div>
+
+        <div id="content" style="display:none;" class="box">
+          <h2>🚀 SALOM, USTOZ!</h2>
+          <p>Laboratoriya holati: <span style="color:white">XAVFSIZ</span></p>
+          <p>Barcha tizimlar normal ishlamoqda.</p>
+        </div>
+
+        <script>
+          let attempts = 0;
+          function check() {
+            let input = document.getElementById("pass").value;
+            if (input === "${password}") {
+              document.getElementById("content").style.display = "block";
+              document.getElementById("login").style.display = "none";
+            } else {
+              attempts++;
+              if (attempts >= 3) {
+                alert("DIQQAT! Hujum aniqlandi. Kirish yopildi.");
+                window.location.href = window.location.href + "?blocked=true";
+              } else {
+                alert("Xato! Qolgan urinishlar: " + (3 - attempts));
+              }
+            }
+          }
+        </script>
+      </body>
+      </html>
+    `;
+
+    return new Response(html, {
+      headers: { "content-type": "text/html;charset=UTF-8" },
+    });
+  },
+};
